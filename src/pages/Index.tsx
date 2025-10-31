@@ -17,12 +17,22 @@ const Index = () => {
               Temple Membership
             </h1>
           </div>
-          <Button
-            onClick={() => navigate("/auth")}
-            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
-          >
-            Get Started
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => navigate("/auth")}
+              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
+            >
+              Get Started
+            </Button>
+            <Button
+              onClick={() => navigate("/admin/login")}
+              variant="outline"
+              size="icon"
+              className="border-primary/50 hover:bg-primary/10"
+            >
+              <Shield className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
