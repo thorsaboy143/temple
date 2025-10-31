@@ -11,6 +11,7 @@ import { z } from "zod";
 import { ArrowLeft, Church, Plus, Trash2, Upload, X } from "lucide-react";
 import upiQrCode from "@/assets/upi-qr-code.png";
 import { TablesInsert } from "@/integrations/supabase/types";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 const applicationSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -43,6 +44,7 @@ const Apply = () => {
   const [aadharPreview, setAadharPreview] = useState<string | null>(null);
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -99,7 +101,11 @@ const Apply = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSubmitting) return;
+    
     setLoading(true);
+    setIsSubmitting(true);
 
     try {
       const validation = applicationSchema.safeParse({
@@ -144,11 +150,8 @@ const Apply = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage
-        .from('aadhaar-cards')
-        .getPublicUrl(fileName);
-      
-      aadharCardUrl = urlData.publicUrl;
+      // Store the file path instead of URL - signed URLs generated on-demand
+      aadharCardUrl = fileName;
 
       const applicationData: TablesInsert<"membership_applications"> = {
         user_id: user.id,
@@ -179,13 +182,15 @@ const Apply = () => {
 
       navigate("/dashboard");
     } catch (error: any) {
+      console.error('Error submitting application:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -449,7 +454,7 @@ const Apply = () => {
               <Button
                 type="submit"
                 className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity h-12 text-lg"
-                disabled={loading}
+                disabled={loading || isSubmitting}
               >
                 {loading ? "Submitting..." : "Submit Application"}
               </Button>

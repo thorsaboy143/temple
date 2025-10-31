@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { Church } from "lucide-react";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 const authSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -98,9 +99,10 @@ const Auth = () => {
         });
       }
     } catch (error: any) {
+      console.error('Auth error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     } finally {

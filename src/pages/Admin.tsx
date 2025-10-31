@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Check, Church, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tables } from "@/integrations/supabase/types";
+import { getUserFriendlyError } from "@/lib/errorHandler";
 
 type Application = Tables<"membership_applications">;
 
@@ -75,9 +76,10 @@ const Admin = () => {
         description: `Application ${status} successfully.`,
       });
     } catch (error: any) {
+      console.error('Error updating status:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: getUserFriendlyError(error),
         variant: "destructive",
       });
     }

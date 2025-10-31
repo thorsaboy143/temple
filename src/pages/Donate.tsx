@@ -17,6 +17,7 @@ const Donate = () => {
   const [customAmount, setCustomAmount] = useState("");
   const [upiId, setUpiId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -44,7 +45,11 @@ const Donate = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSubmitting) return;
+    
     setLoading(true);
+    setIsSubmitting(true);
 
     try {
       if (!donorName || !phone || !amount || !upiId) {
