@@ -4,10 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Check, Church, X } from "lucide-react";
+import { ArrowLeft, Check, Church, X, LogOut, Filter, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tables } from "@/integrations/supabase/types";
 import { getUserFriendlyError } from "@/lib/errorHandler";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Application = Tables<"membership_applications">;
 
@@ -15,6 +16,7 @@ const Admin = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -57,6 +59,23 @@ const Admin = () => {
 
     checkAdminAndFetch();
   }, [navigate, toast]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/admin/login");
+  };
+
+  const filteredApplications = applications.filter((app) => {
+    if (filterStatus === "all") return true;
+    return app.status === filterStatus;
+  });
+
+  const stats = {
+    total: applications.length,
+    pending: applications.filter((a) => a.status === "pending").length,
+    approved: applications.filter((a) => a.status === "approved").length,
+    rejected: applications.filter((a) => a.status === "rejected").length,
+  };
 
   const updateStatus = async (id: string, status: string) => {
     try {
@@ -112,33 +131,83 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center space-x-3">
-          <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-            <Church className="w-6 h-6 text-primary-foreground" />
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+              <Church className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Admin Panel
+            </h1>
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Admin Panel
-          </h1>
+          <Button onClick={handleLogout} variant="ghost" size="icon">
+            <LogOut className="w-5 h-5" />
+          </Button>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8 space-y-8">
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Applications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stats.total}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-yellow-600">{stats.pending}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Approved</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-green-600">{stats.approved}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Rejected</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-red-600">{stats.rejected}</div>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card className="shadow-[var(--shadow-temple)]">
           <CardHeader>
             <CardTitle className="text-2xl">Membership Applications</CardTitle>
             <CardDescription>Review and manage temple membership applications</CardDescription>
           </CardHeader>
           <CardContent>
-            {applications.length === 0 ? (
+            <Tabs value={filterStatus} onValueChange={setFilterStatus} className="mb-6">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="all">All ({stats.total})</TabsTrigger>
+                <TabsTrigger value="pending">Pending ({stats.pending})</TabsTrigger>
+                <TabsTrigger value="approved">Approved ({stats.approved})</TabsTrigger>
+                <TabsTrigger value="rejected">Rejected ({stats.rejected})</TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            {filteredApplications.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                <p>No applications yet.</p>
+                <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>No {filterStatus !== "all" ? filterStatus : ""} applications found.</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {applications.map((app) => (
+                {filteredApplications.map((app) => (
                   <Card key={app.id} className="border-2">
                     <CardContent className="pt-6 space-y-4">
                       <div className="flex items-start justify-between">
@@ -152,7 +221,8 @@ const Admin = () => {
                           <div className="grid gap-2 text-sm text-muted-foreground">
                             <p><strong>Phone:</strong> {app.phone}</p>
                             <p><strong>Aadhar:</strong> {app.aadhar_number}</p>
-                            <p><strong>Address:</strong> {app.address}</p>
+                            {app.upi_id && <p><strong>UPI ID:</strong> {app.upi_id}</p>}
+                            <p><strong>Address:</strong> {app.address}, {app.city}, {app.state} - {app.pincode}</p>
                             <p><strong>Donation:</strong> ₹{app.donation_amount}</p>
                             <p><strong>Submitted:</strong> {new Date(app.created_at).toLocaleString()}</p>
                           </div>
