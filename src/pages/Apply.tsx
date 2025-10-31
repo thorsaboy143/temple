@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { ArrowLeft, Church, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Church, Plus, Trash2, Upload, X } from "lucide-react";
+import upiQrCode from "@/assets/upi-qr-code.png";
 import { TablesInsert } from "@/integrations/supabase/types";
 
 const applicationSchema = z.object({
@@ -16,6 +17,9 @@ const applicationSchema = z.object({
   address: z.string().min(10, "Address must be at least 10 characters"),
   phone: z.string().min(10, "Phone must be at least 10 digits"),
   aadharNumber: z.string().regex(/^\d{12}$/, "Aadhar must be exactly 12 digits"),
+  pincode: z.string().regex(/^\d{6}$/, "Pincode must be exactly 6 digits"),
+  city: z.string().min(2, "City must be at least 2 characters"),
+  state: z.string().min(2, "State must be at least 2 characters"),
 });
 
 interface FamilyMember {
@@ -30,6 +34,11 @@ const Apply = () => {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [aadharNumber, setAadharNumber] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [aadharFile, setAadharFile] = useState<File | null>(null);
+  const [aadharPreview, setAadharPreview] = useState<string | null>(null);
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -61,6 +70,31 @@ const Apply = () => {
     setFamilyMembers(updated);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Aadhaar card file must be less than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      setAadharFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAadharPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeFile = () => {
+    setAadharFile(null);
+    setAadharPreview(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -71,6 +105,9 @@ const Apply = () => {
         address,
         phone,
         aadharNumber,
+        pincode,
+        city,
+        state,
       });
 
       if (!validation.success) {
@@ -83,44 +120,57 @@ const Apply = () => {
         return;
       }
 
+      if (!aadharFile) {
+        toast({
+          title: "Aadhaar Card Required",
+          description: "Please upload your Aadhaar card",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Upload Aadhaar card file
+      let aadharCardUrl = "";
+      const fileExt = aadharFile.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('aadhaar-cards')
+        .upload(fileName, aadharFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('aadhaar-cards')
+        .getPublicUrl(fileName);
+      
+      aadharCardUrl = urlData.publicUrl;
+
       const applicationData: TablesInsert<"membership_applications"> = {
         user_id: user.id,
         full_name: fullName,
         address,
         phone,
         aadhar_number: aadharNumber,
+        pincode,
+        city,
+        state,
+        aadhar_card_url: aadharCardUrl,
         family_members: familyMembers as any,
         donation_amount: 1000,
         status: "pending",
       };
 
-      const { data: newApplication, error } = await supabase
+      const { error } = await supabase
         .from("membership_applications")
-        .insert(applicationData)
-        .select()
-        .single();
+        .insert(applicationData);
 
       if (error) throw error;
 
-      // Send confirmation email
-      try {
-        await supabase.functions.invoke("send-membership-confirmation", {
-          body: {
-            email: user.email,
-            fullName: fullName,
-            donationAmount: 1000,
-            applicationId: newApplication.id,
-          },
-        });
-        console.log("Confirmation email sent successfully");
-      } catch (emailError) {
-        console.error("Failed to send email:", emailError);
-        // Don't fail the whole operation if email fails
-      }
-
       toast({
         title: "Application Submitted!",
-        description: "Your membership application has been submitted successfully. You'll receive a confirmation email shortly.",
+        description: "Your membership application has been submitted successfully.",
       });
 
       navigate("/dashboard");
@@ -197,6 +247,45 @@ const Apply = () => {
                 />
               </div>
 
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="space-y-2">
+                  <Label htmlFor="pincode">Pincode *</Label>
+                  <Input
+                    id="pincode"
+                    type="text"
+                    placeholder="6-digit pincode"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
+                    maxLength={6}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="city">City *</Label>
+                  <Input
+                    id="city"
+                    type="text"
+                    placeholder="Enter city"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="state">State *</Label>
+                  <Input
+                    id="state"
+                    type="text"
+                    placeholder="Enter state"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="aadhar">Aadhar Card Number *</Label>
                 <Input
@@ -208,6 +297,65 @@ const Apply = () => {
                   maxLength={12}
                   required
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="aadharFile">Upload Aadhaar Card *</Label>
+                {!aadharPreview ? (
+                  <div className="border-2 border-dashed rounded-lg p-6 hover:border-primary/50 transition-colors">
+                    <input
+                      type="file"
+                      id="aadharFile"
+                      accept="image/*,.pdf"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      required
+                    />
+                    <label
+                      htmlFor="aadharFile"
+                      className="flex flex-col items-center justify-center cursor-pointer"
+                    >
+                      <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                      <span className="text-sm text-muted-foreground">
+                        Click to upload Aadhaar card (Max 5MB)
+                      </span>
+                      <span className="text-xs text-muted-foreground mt-1">
+                        Supports: JPG, PNG, PDF
+                      </span>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="relative border rounded-lg p-4 bg-muted/30">
+                    <Button
+                      type="button"
+                      onClick={removeFile}
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 right-2"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                    {aadharFile?.type.includes('pdf') ? (
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-primary/10 rounded flex items-center justify-center">
+                          <span className="text-xs font-bold text-primary">PDF</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{aadharFile.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(aadharFile.size / 1024).toFixed(2)} KB
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={aadharPreview}
+                        alt="Aadhaar preview"
+                        className="w-full h-48 object-contain rounded"
+                      />
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -259,10 +407,25 @@ const Apply = () => {
                 ))}
               </div>
 
-              <div className="p-4 bg-muted/50 rounded-lg border border-primary/20">
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-medium">Membership Fee</span>
-                  <span className="text-2xl font-bold text-primary">₹1,000</span>
+              <div className="p-6 bg-muted/50 rounded-lg border border-primary/20 space-y-4">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold mb-2">Payment Details</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Scan the QR code to pay the membership fee
+                  </p>
+                </div>
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="bg-white p-4 rounded-lg">
+                    <img 
+                      src={upiQrCode} 
+                      alt="UPI Payment QR Code" 
+                      className="w-48 h-48"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-primary">₹1,000</p>
+                    <p className="text-sm text-muted-foreground">Membership Fee</p>
+                  </div>
                 </div>
               </div>
 

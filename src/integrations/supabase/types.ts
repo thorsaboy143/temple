@@ -16,40 +16,52 @@ export type Database = {
     Tables: {
       membership_applications: {
         Row: {
+          aadhar_card_url: string | null
           aadhar_number: string
           address: string
+          city: string | null
           created_at: string
           donation_amount: number
           family_members: Json | null
           full_name: string
           id: string
           phone: string
+          pincode: string | null
+          state: string | null
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          aadhar_card_url?: string | null
           aadhar_number: string
           address: string
+          city?: string | null
           created_at?: string
           donation_amount?: number
           family_members?: Json | null
           full_name: string
           id?: string
           phone: string
+          pincode?: string | null
+          state?: string | null
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          aadhar_card_url?: string | null
           aadhar_number?: string
           address?: string
+          city?: string | null
           created_at?: string
           donation_amount?: number
           family_members?: Json | null
           full_name?: string
           id?: string
           phone?: string
+          pincode?: string | null
+          state?: string | null
           status?: string
           updated_at?: string
           user_id?: string
