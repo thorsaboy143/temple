@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Church, Users, FileCheck, Shield } from "lucide-react";
+import { Church, Users, FileCheck, Shield, Heart } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -38,13 +38,24 @@ const Index = () => {
             Join our sacred temple community and become part of a spiritual journey. 
             Register as a member and receive exclusive benefits and blessings.
           </p>
-          <Button
-            onClick={() => navigate("/auth")}
-            size="lg"
-            className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity text-lg px-8 py-6 shadow-[var(--shadow-temple)]"
-          >
-            Join Now - ₹1,000
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => navigate("/auth")}
+              size="lg"
+              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity text-lg px-8 py-6 shadow-[var(--shadow-temple)]"
+            >
+              Join Now - ₹1,000
+            </Button>
+            <Button
+              onClick={() => navigate("/donate")}
+              size="lg"
+              variant="outline"
+              className="text-lg px-8 py-6 border-2 border-primary hover:bg-primary/10"
+            >
+              <Heart className="w-5 h-5 mr-2" />
+              Donate Now
+            </Button>
+          </div>
         </section>
 
         <section className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">

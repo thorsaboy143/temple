@@ -20,6 +20,7 @@ const applicationSchema = z.object({
   pincode: z.string().regex(/^\d{6}$/, "Pincode must be exactly 6 digits"),
   city: z.string().min(2, "City must be at least 2 characters"),
   state: z.string().min(2, "State must be at least 2 characters"),
+  upiId: z.string().min(3, "UPI ID is required").regex(/^[\w.-]+@[\w.-]+$/, "Invalid UPI ID format"),
 });
 
 interface FamilyMember {
@@ -37,6 +38,7 @@ const Apply = () => {
   const [pincode, setPincode] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
+  const [upiId, setUpiId] = useState("");
   const [aadharFile, setAadharFile] = useState<File | null>(null);
   const [aadharPreview, setAadharPreview] = useState<string | null>(null);
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
@@ -108,6 +110,7 @@ const Apply = () => {
         pincode,
         city,
         state,
+        upiId,
       });
 
       if (!validation.success) {
@@ -156,6 +159,7 @@ const Apply = () => {
         pincode,
         city,
         state,
+        upi_id: upiId,
         aadhar_card_url: aadharCardUrl,
         family_members: familyMembers as any,
         donation_amount: 1000,
@@ -405,6 +409,19 @@ const Apply = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="upiId">UPI ID *</Label>
+                <Input
+                  id="upiId"
+                  type="text"
+                  placeholder="yourname@upi"
+                  value={upiId}
+                  onChange={(e) => setUpiId(e.target.value)}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">Enter your UPI ID for payment verification</p>
               </div>
 
               <div className="p-6 bg-muted/50 rounded-lg border border-primary/20 space-y-4">

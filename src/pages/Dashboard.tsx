@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Church, FileText, LogOut, Settings, Shield } from "lucide-react";
+import { Church, FileText, LogOut, Settings, Shield, Heart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface UserRole {
@@ -145,10 +145,19 @@ const Dashboard = () => {
                 <span className="text-lg">Apply for Membership</span>
               </div>
             </Button>
+            <Button
+              onClick={() => navigate("/donate")}
+              className="h-24 bg-gradient-to-r from-secondary to-primary hover:opacity-90 transition-opacity"
+            >
+              <div className="flex flex-col items-center space-y-2">
+                <Heart className="w-8 h-8" />
+                <span className="text-lg">Make a Donation</span>
+              </div>
+            </Button>
             {isAdmin && (
               <Button
                 onClick={() => navigate("/admin")}
-                className="h-24 bg-card border-2 border-primary text-foreground hover:bg-muted"
+                className="h-24 bg-card border-2 border-primary text-foreground hover:bg-muted md:col-span-2"
               >
                 <div className="flex flex-col items-center space-y-2">
                   <Settings className="w-8 h-8 text-primary" />
