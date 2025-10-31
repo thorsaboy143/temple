@@ -94,9 +94,29 @@ const Apply = () => {
         status: "pending",
       };
 
-      const { error } = await supabase.from("membership_applications").insert(applicationData);
+      const { data: newApplication, error } = await supabase
+        .from("membership_applications")
+        .insert(applicationData)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Send confirmation email
+      try {
+        await supabase.functions.invoke("send-membership-confirmation", {
+          body: {
+            email: user.email,
+            fullName: fullName,
+            donationAmount: 1000,
+            applicationId: newApplication.id,
+          },
+        });
+        console.log("Confirmation email sent successfully");
+      } catch (emailError) {
+        console.error("Failed to send email:", emailError);
+        // Don't fail the whole operation if email fails
+      }
 
       toast({
         title: "Application Submitted!",
