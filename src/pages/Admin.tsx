@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Check, Church, X, LogOut, Filter, FileText } from "lucide-react";
+import { ArrowLeft, Check, Church, X, LogOut, Filter, FileText, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tables } from "@/integrations/supabase/types";
 import { getUserFriendlyError } from "@/lib/errorHandler";
@@ -17,6 +19,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [searchName, setSearchName] = useState("");
+  const [searchAadhar, setSearchAadhar] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -66,8 +70,22 @@ const Admin = () => {
   };
 
   const filteredApplications = applications.filter((app) => {
-    if (filterStatus === "all") return true;
-    return app.status === filterStatus;
+    // Filter by status
+    if (filterStatus !== "all" && app.status !== filterStatus) {
+      return false;
+    }
+    
+    // Filter by name
+    if (searchName && !app.full_name.toLowerCase().includes(searchName.toLowerCase())) {
+      return false;
+    }
+    
+    // Filter by Aadhar number
+    if (searchAadhar && !app.aadhar_number.includes(searchAadhar)) {
+      return false;
+    }
+    
+    return true;
   });
 
   const stats = {
@@ -131,15 +149,15 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon">
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-              <Church className="w-6 h-6 text-primary-foreground" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+              <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Admin Panel
             </h1>
           </div>
@@ -149,7 +167,7 @@ const Admin = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 space-y-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
             <CardHeader className="pb-3">
@@ -199,6 +217,50 @@ const Admin = () => {
                 <TabsTrigger value="rejected">Rejected ({stats.rejected})</TabsTrigger>
               </TabsList>
             </Tabs>
+
+            <div className="mb-6 p-4 bg-muted/50 rounded-lg border space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Search className="w-5 h-5 text-muted-foreground" />
+                <h3 className="font-semibold">Search Applications</h3>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="searchName">Search by Name</Label>
+                  <Input
+                    id="searchName"
+                    type="text"
+                    placeholder="Enter applicant name..."
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="searchAadhar">Search by Aadhar Number</Label>
+                  <Input
+                    id="searchAadhar"
+                    type="text"
+                    placeholder="Enter Aadhar number..."
+                    value={searchAadhar}
+                    onChange={(e) => setSearchAadhar(e.target.value)}
+                    maxLength={12}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+              {(searchName || searchAadhar) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchName("");
+                    setSearchAadhar("");
+                  }}
+                >
+                  Clear Search
+                </Button>
+              )}
+            </div>
 
             {filteredApplications.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
