@@ -57,11 +57,19 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/auth?mode=signup")}
               size="lg"
               className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity text-lg px-8 py-6 shadow-[var(--shadow-temple)]"
             >
-              Join Now - ₹1,000
+              Sign Up - ₹1,000
+            </Button>
+            <Button
+              onClick={() => navigate("/auth?mode=login")}
+              size="lg"
+              variant="outline"
+              className="text-lg px-8 py-6 border-2 border-primary hover:bg-primary/10"
+            >
+              Login
             </Button>
             <Button
               onClick={() => navigate("/donate")}
