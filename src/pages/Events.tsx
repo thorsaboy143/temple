@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, MapPin, Clock } from "lucide-react";
+import MobileNav from "@/components/MobileNav";
 
 const Events = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Events = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 pb-20 md:pb-0">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-primary">Temple Events</h1>
@@ -80,6 +81,7 @@ const Events = () => {
           ))}
         </div>
       </div>
+      <MobileNav />
     </div>
   );
 };

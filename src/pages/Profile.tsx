@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { getUserFriendlyError } from "@/lib/errorHandler";
 import { Upload, User } from "lucide-react";
+import MobileNav from "@/components/MobileNav";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -144,7 +145,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20 pb-20 md:pb-0">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-primary">Edit Profile</h1>
@@ -213,6 +214,7 @@ const Profile = () => {
           </CardContent>
         </Card>
       </div>
+      <MobileNav />
     </div>
   );
 };

@@ -9,9 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { ArrowLeft, Church, Plus, Trash2, Upload, X } from "lucide-react";
-import upiQrCode from "@/assets/upi-qr-code.png";
+import QRCode from "qrcode";
 import { TablesInsert } from "@/integrations/supabase/types";
 import { getUserFriendlyError } from "@/lib/errorHandler";
+import MobileNav from "@/components/MobileNav";
 
 const applicationSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -45,6 +46,7 @@ const Apply = () => {
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -58,6 +60,25 @@ const Apply = () => {
         setPhone(session.user.user_metadata?.phone || "");
       }
     });
+
+    // Generate QR code for UPI
+    const generateQRCode = async () => {
+      const upiString = `upi://pay?pa=fhdjdnjdjjrjtn@okaxis&pn=Temple Membership&am=1000&cu=INR`;
+      try {
+        const url = await QRCode.toDataURL(upiString, {
+          width: 300,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
+        setQrCodeUrl(url);
+      } catch (err) {
+        console.error('Error generating QR code:', err);
+      }
+    };
+    generateQRCode();
   }, [navigate]);
 
   const addFamilyMember = () => {
@@ -195,7 +216,7 @@ const Apply = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background pb-20 md:pb-0">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center space-x-3">
           <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon">
@@ -438,12 +459,17 @@ const Apply = () => {
                 </div>
                 <div className="flex flex-col items-center space-y-3">
                   <div className="bg-white p-4 rounded-lg">
-                    <img 
-                      src={upiQrCode} 
-                      alt="UPI Payment QR Code" 
-                      className="w-48 h-48"
-                    />
+                    {qrCodeUrl && (
+                      <img 
+                        src={qrCodeUrl} 
+                        alt="UPI Payment QR Code" 
+                        className="w-48 h-48"
+                      />
+                    )}
                   </div>
+                  <p className="text-center text-sm text-muted-foreground">
+                    UPI ID: fhdjdnjdjjrjtn@okaxis
+                  </p>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-primary">₹1,000</p>
                     <p className="text-sm text-muted-foreground">Membership Fee</p>
@@ -462,6 +488,7 @@ const Apply = () => {
           </CardContent>
         </Card>
       </main>
+      <MobileNav />
     </div>
   );
 };
