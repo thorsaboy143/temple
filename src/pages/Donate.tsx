@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Church, Heart } from "lucide-react";
-import upiQrCode from "@/assets/upi-qr-code.png";
+import QRCode from "qrcode";
 
 const Donate = () => {
   const [user, setUser] = useState<any>(null);
@@ -15,9 +15,10 @@ const Donate = () => {
   const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState("");
   const [customAmount, setCustomAmount] = useState("");
-  const [upiId, setUpiId] = useState("");
+  const [transactionId, setTransactionId] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -31,6 +32,25 @@ const Donate = () => {
         setPhone(session.user.user_metadata?.phone || "");
       }
     });
+
+    // Generate QR code for UPI
+    const generateQRCode = async () => {
+      const upiString = `upi://pay?pa=fhdjdnjdjjrjtn@okaxis&pn=Temple Donation&cu=INR`;
+      try {
+        const url = await QRCode.toDataURL(upiString, {
+          width: 300,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
+        setQrCodeUrl(url);
+      } catch (err) {
+        console.error('Error generating QR code:', err);
+      }
+    };
+    generateQRCode();
   }, []);
 
   const handleAmountSelect = (value: number) => {
@@ -52,10 +72,10 @@ const Donate = () => {
     setIsSubmitting(true);
 
     try {
-      if (!donorName || !phone || !amount || !upiId) {
+      if (!donorName || !phone || !amount || !transactionId) {
         toast({
           title: "Missing Information",
-          description: "Please fill in all required fields",
+          description: "Please fill in all required fields including transaction ID",
           variant: "destructive",
         });
         setLoading(false);
@@ -81,7 +101,7 @@ const Donate = () => {
       // Reset form
       setAmount("");
       setCustomAmount("");
-      setUpiId("");
+      setTransactionId("");
       
       if (!user) {
         setDonorName("");
@@ -137,13 +157,18 @@ const Donate = () => {
                 </div>
                 <div className="flex justify-center">
                   <div className="bg-white p-4 rounded-lg">
-                    <img 
-                      src={upiQrCode} 
-                      alt="UPI Payment QR Code" 
-                      className="w-48 h-48"
-                    />
+                    {qrCodeUrl && (
+                      <img 
+                        src={qrCodeUrl} 
+                        alt="UPI Payment QR Code" 
+                        className="w-48 h-48"
+                      />
+                    )}
                   </div>
                 </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  UPI ID: fhdjdnjdjjrjtn@okaxis
+                </p>
               </div>
 
               {/* Donation Amount Selection */}
@@ -208,16 +233,16 @@ const Donate = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="upiId">Your UPI ID *</Label>
+                  <Label htmlFor="transactionId">Transaction ID *</Label>
                   <Input
-                    id="upiId"
+                    id="transactionId"
                     type="text"
-                    placeholder="yourname@upi"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder="Enter UPI transaction ID"
+                    value={transactionId}
+                    onChange={(e) => setTransactionId(e.target.value)}
                     required
                   />
-                  <p className="text-xs text-muted-foreground">Enter the UPI ID used for payment</p>
+                  <p className="text-xs text-muted-foreground">Enter the transaction ID after completing the payment</p>
                 </div>
               </div>
 

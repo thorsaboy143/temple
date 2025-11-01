@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Church, FileText, LogOut, Settings, Shield, Heart } from "lucide-react";
+import { Church, FileText, LogOut, Settings, Shield, Heart, Calendar, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface UserRole {
@@ -112,10 +112,20 @@ const Dashboard = () => {
               Dashboard
             </h1>
           </div>
-          <Button onClick={handleLogout} variant="outline" size="sm">
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => navigate("/events")} variant="outline" size="sm">
+              <Calendar className="w-4 h-4 mr-2" />
+              Events
+            </Button>
+            <Button onClick={() => navigate("/profile")} variant="outline" size="sm">
+              <User className="w-4 h-4 mr-2" />
+              Profile
+            </Button>
+            <Button onClick={handleLogout} variant="outline" size="sm">
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </header>
 

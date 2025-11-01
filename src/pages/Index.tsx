@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Church, Users, FileCheck, Shield, Heart } from "lucide-react";
+import { Church, Users, FileCheck, Shield, Heart, Calendar } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -18,6 +18,13 @@ const Index = () => {
             </h1>
           </div>
           <div className="flex gap-2">
+            <Button
+              onClick={() => navigate("/events")}
+              variant="outline"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Events
+            </Button>
             <Button
               onClick={() => navigate("/auth")}
               className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
