@@ -10,6 +10,7 @@ import Apply from "./pages/Apply";
 import Donate from "./pages/Donate";
 import Events from "./pages/Events";
 import Profile from "./pages/Profile";
+import PaymentDetails from "./pages/PaymentDetails";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/donate" element={<Donate />} />
           <Route path="/events" element={<Events />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/payment-details" element={<PaymentDetails />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

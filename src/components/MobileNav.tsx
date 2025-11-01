@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, Calendar, User, FileText } from "lucide-react";
+import { Home, Calendar, User, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MobileNav = () => {
@@ -9,7 +9,7 @@ const MobileNav = () => {
   const navItems = [
     { icon: Home, label: "Home", path: "/dashboard" },
     { icon: Calendar, label: "Events", path: "/events" },
-    { icon: FileText, label: "Apply", path: "/apply" },
+    { icon: CreditCard, label: "Payment", path: "/payment-details" },
     { icon: User, label: "Profile", path: "/profile" },
   ];
 
