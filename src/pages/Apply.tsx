@@ -218,20 +218,20 @@ const Apply = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background pb-20 md:pb-0">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center space-x-3">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center space-x-2 sm:space-x-3">
           <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon">
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-            <Church className="w-6 h-6 text-primary-foreground" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+            <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Membership Application
           </h1>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-2xl">
         <Card className="shadow-[var(--shadow-temple)]">
           <CardHeader>
             <CardTitle className="text-2xl">Temple Membership Form</CardTitle>
