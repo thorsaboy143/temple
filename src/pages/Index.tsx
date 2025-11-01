@@ -61,7 +61,7 @@ const Index = () => {
               size="lg"
               className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity text-lg px-8 py-6 shadow-[var(--shadow-temple)]"
             >
-              Sign Up - ₹1,000
+              Sign Up
             </Button>
             <Button
               onClick={() => navigate("/auth?mode=login")}
