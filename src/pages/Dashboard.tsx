@@ -103,34 +103,39 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background pb-20 md:pb-0">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary-glow/5 to-background pb-20 md:pb-0 relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-primary/8 rounded-full blur-[100px]" />
+      </div>
+
+      <header className="border-b glass border-primary/10 sticky top-0 z-50 shadow-[var(--shadow-temple)]">
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-              <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+              <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" strokeWidth={1.8} />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-xl sm:text-2xl font-semibold gradient-text tracking-tight">
               Dashboard
             </h1>
           </div>
-          <Button onClick={handleLogout} variant="outline" size="sm">
+          <Button onClick={handleLogout} variant="outline" size="sm" className="border-primary/30">
             <LogOut className="w-4 h-4 mr-2 md:mr-2" />
             <span className="hidden sm:inline">Logout</span>
           </Button>
         </div>
       </header>
 
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
-        <Card className="shadow-[var(--shadow-temple)]">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8 relative z-10">
+        <Card className="shadow-[var(--shadow-temple)] border-primary/10 rounded-3xl temple-glow">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <CardTitle className="text-2xl">Welcome, {user?.user_metadata?.full_name || user?.email}</CardTitle>
+                <CardTitle className="text-2xl tracking-tight">Welcome, {user?.user_metadata?.full_name || user?.email}</CardTitle>
                 <CardDescription>Manage your temple membership</CardDescription>
               </div>
               {isAdmin && (
-                <Badge className="bg-gradient-to-r from-primary to-secondary">
+                <Badge className="bg-gradient-to-r from-primary to-accent shadow-lg">
                   <Shield className="w-3 h-3 mr-1" />
                   Admin
                 </Badge>
@@ -140,57 +145,59 @@ const Dashboard = () => {
           <CardContent className="grid gap-4 md:grid-cols-2">
             <Button
               onClick={() => navigate("/apply")}
-              className="h-24 bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
+              className="h-24 bg-gradient-to-br from-primary to-accent hover:opacity-90 transition-all shadow-[var(--shadow-glow)] temple-glow rounded-2xl"
             >
               <div className="flex flex-col items-center space-y-2">
                 <FileText className="w-8 h-8" />
-                <span className="text-lg">Apply for Membership</span>
+                <span className="text-lg font-semibold">Apply for Membership</span>
               </div>
             </Button>
             <Button
               onClick={() => navigate("/donate")}
-              className="h-24 bg-gradient-to-r from-secondary to-primary hover:opacity-90 transition-opacity"
+              className="h-24 bg-gradient-to-br from-accent to-primary hover:opacity-90 transition-all shadow-[var(--shadow-glow)] temple-glow rounded-2xl"
             >
               <div className="flex flex-col items-center space-y-2">
                 <Heart className="w-8 h-8" />
-                <span className="text-lg">Make a Donation</span>
+                <span className="text-lg font-semibold">Make a Donation</span>
               </div>
             </Button>
             {isAdmin && (
               <Button
                 onClick={() => navigate("/admin")}
-                className="h-24 bg-card border-2 border-primary text-foreground hover:bg-muted md:col-span-2"
+                className="h-24 bg-card border-2 border-primary/30 text-foreground hover:bg-primary/5 md:col-span-2 rounded-2xl temple-glow"
               >
                 <div className="flex flex-col items-center space-y-2">
                   <Settings className="w-8 h-8 text-primary" />
-                  <span className="text-lg">Admin Panel</span>
+                  <span className="text-lg font-semibold">Admin Panel</span>
                 </div>
               </Button>
             )}
           </CardContent>
         </Card>
 
-        <Card className="shadow-[var(--shadow-temple)]">
+        <Card className="shadow-[var(--shadow-temple)] border-primary/10 rounded-3xl">
           <CardHeader>
-            <CardTitle>Your Applications</CardTitle>
+            <CardTitle className="text-2xl tracking-tight">Your Applications</CardTitle>
             <CardDescription>Track your membership application status</CardDescription>
           </CardHeader>
           <CardContent>
             {applications.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No applications yet. Apply for membership to get started!</p>
+              <div className="text-center py-12 text-muted-foreground">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <FileText className="w-10 h-10 text-primary opacity-50" />
+                </div>
+                <p className="text-lg">No applications yet. Apply for membership to get started!</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {applications.map((app) => (
                   <div
                     key={app.id}
-                    className="p-4 border rounded-lg hover:bg-muted/50 transition-colors space-y-3"
+                    className="p-6 border border-primary/10 rounded-2xl hover:bg-gradient-to-br hover:from-primary/5 hover:to-accent/5 transition-all duration-500 space-y-3 temple-glow"
                   >
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <p className="font-medium">{app.full_name}</p>
+                        <p className="font-semibold text-lg tracking-tight">{app.full_name}</p>
                         <p className="text-sm text-muted-foreground">
                           Submitted: {new Date(app.created_at).toLocaleDateString()}
                         </p>
@@ -198,7 +205,7 @@ const Dashboard = () => {
                           Donation: ₹{app.donation_amount}
                         </p>
                         {app.member_id && (
-                          <p className="text-sm font-semibold text-primary">
+                          <p className="text-sm font-semibold gradient-text">
                             Member ID: {app.member_id}
                           </p>
                         )}
@@ -212,7 +219,7 @@ const Dashboard = () => {
                         onClick={() => navigate(`/member-card?id=${app.id}`)}
                         variant="outline"
                         size="sm"
-                        className="w-full"
+                        className="w-full border-primary/30 temple-glow"
                       >
                         <CreditCard className="w-4 h-4 mr-2" />
                         View Member Card

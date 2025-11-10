@@ -147,66 +147,72 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary-glow/5 to-background relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/8 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-accent/8 rounded-full blur-[100px]" />
+      </div>
+
+      <header className="border-b glass border-primary/10 sticky top-0 z-50 shadow-[var(--shadow-temple)]">
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon">
+            <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon" className="temple-glow">
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-              <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+              <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" strokeWidth={1.8} />
             </div>
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-semibold gradient-text tracking-tight">
               Admin Panel
             </h1>
           </div>
-          <Button onClick={handleLogout} variant="ghost" size="icon">
+          <Button onClick={handleLogout} variant="ghost" size="icon" className="temple-glow">
             <LogOut className="w-5 h-5" />
           </Button>
         </div>
       </header>
 
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-8 relative z-10">
         <div className="grid gap-4 md:grid-cols-4">
-          <Card>
+          <Card className="border-primary/10 rounded-2xl temple-glow">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Applications</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.total}</div>
+              <div className="text-4xl font-bold gradient-text">{stats.total}</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-primary/10 rounded-2xl temple-glow">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-yellow-600">{stats.pending}</div>
+              <div className="text-4xl font-bold text-yellow-600">{stats.pending}</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-primary/10 rounded-2xl temple-glow">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Approved</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600">{stats.approved}</div>
+              <div className="text-4xl font-bold text-green-600">{stats.approved}</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-primary/10 rounded-2xl temple-glow">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Rejected</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-red-600">{stats.rejected}</div>
+              <div className="text-4xl font-bold text-red-600">{stats.rejected}</div>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="shadow-[var(--shadow-temple)]">
+        <Card className="shadow-[var(--shadow-temple)] border-primary/10 rounded-3xl">
           <CardHeader>
-            <CardTitle className="text-2xl">Membership Applications</CardTitle>
-            <CardDescription>Review and manage temple membership applications</CardDescription>
+            <CardTitle className="text-3xl tracking-tight">Membership Applications</CardTitle>
+            <CardDescription className="text-base">Review and manage temple membership applications</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={filterStatus} onValueChange={setFilterStatus} className="mb-6">

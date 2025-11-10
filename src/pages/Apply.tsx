@@ -216,26 +216,32 @@ const Apply = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background pb-20 md:pb-0">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary-glow/5 to-background pb-20 md:pb-0 relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/8 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-accent/8 rounded-full blur-[100px]" />
+      </div>
+
+      <header className="border-b glass border-primary/10 sticky top-0 z-50 shadow-[var(--shadow-temple)]">
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center space-x-2 sm:space-x-3">
-          <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon">
+          <Button onClick={() => navigate("/dashboard")} variant="ghost" size="icon" className="temple-glow">
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-            <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+            <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" strokeWidth={1.8} />
           </div>
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-semibold gradient-text tracking-tight">
             Membership Application
           </h1>
         </div>
       </header>
 
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-2xl">
-        <Card className="shadow-[var(--shadow-temple)]">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-2xl relative z-10">
+        <Card className="shadow-[var(--shadow-temple)] border-primary/10 rounded-3xl">
           <CardHeader>
-            <CardTitle className="text-2xl">Temple Membership Form</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-3xl tracking-tight">Temple Membership Form</CardTitle>
+            <CardDescription className="text-base">
               Fill in your details to become a temple member. Membership fee: ₹1,000
             </CardDescription>
           </CardHeader>
