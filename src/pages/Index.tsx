@@ -2,12 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { Church, Heart, Calendar, Shield, UserPlus, CheckCircle, Users, Star } from "lucide-react";
-
 const Index = () => {
   const navigate = useNavigate();
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary-glow/5 to-background relative overflow-hidden">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-primary-glow/5 to-background relative overflow-hidden">
       {/* Ambient glow effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
@@ -49,9 +46,7 @@ const Index = () => {
           
           <h2 className="text-6xl md:text-8xl font-semibold tracking-tight leading-tight">
             <span className="text-foreground">Welcome to Our</span>
-            <span className="block gradient-text mt-2">
-              Sacred Community
-            </span>
+            <span className="block gradient-text mt-2">Community</span>
           </h2>
           
           <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-2xl mx-auto leading-relaxed tracking-wide">
@@ -59,28 +54,14 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-12">
-            <Button 
-              onClick={() => navigate("/auth")} 
-              size="lg" 
-              className="shadow-[var(--shadow-glow)] hover:shadow-[var(--shadow-temple)] transition-all text-lg px-10 h-14 temple-glow"
-            >
+            <Button onClick={() => navigate("/auth")} size="lg" className="shadow-[var(--shadow-glow)] hover:shadow-[var(--shadow-temple)] transition-all text-lg px-10 h-14 temple-glow">
               <Heart className="w-5 h-5 mr-2" />
               Sign Up
             </Button>
-            <Button 
-              onClick={() => navigate("/auth")} 
-              variant="outline" 
-              size="lg"
-              className="text-lg px-10 h-14 border-primary/30 hover:bg-primary/5"
-            >
+            <Button onClick={() => navigate("/auth")} variant="outline" size="lg" className="text-lg px-10 h-14 border-primary/30 hover:bg-primary/5">
               Login
             </Button>
-            <Button 
-              onClick={() => navigate("/donate")} 
-              variant="secondary" 
-              size="lg"
-              className="text-lg px-10 h-14 temple-glow"
-            >
+            <Button onClick={() => navigate("/donate")} variant="secondary" size="lg" className="text-lg px-10 h-14 temple-glow">
               <Heart className="w-5 h-5 mr-2" />
               Donate
             </Button>
@@ -89,7 +70,9 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="container mx-auto px-4 py-24 animate-fade-in relative z-10" style={{ animationDelay: '0.2s' }}>
+      <section className="container mx-auto px-4 py-24 animate-fade-in relative z-10" style={{
+      animationDelay: '0.2s'
+    }}>
         <div className="max-w-6xl mx-auto">
           <h3 className="text-5xl font-semibold text-center mb-20 tracking-tight gradient-text">
             Temple Membership Benefits
@@ -129,7 +112,9 @@ const Index = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="container mx-auto px-4 py-24 animate-fade-in relative z-10" style={{ animationDelay: '0.4s' }}>
+      <section className="container mx-auto px-4 py-24 animate-fade-in relative z-10" style={{
+      animationDelay: '0.4s'
+    }}>
         <div className="max-w-6xl mx-auto">
           <h3 className="text-5xl font-semibold text-center mb-20 tracking-tight gradient-text">
             What You'll Receive
@@ -198,8 +183,6 @@ const Index = () => {
           <p className="text-sm text-muted-foreground">&copy; 2024 Temple Membership. All rights reserved.</p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
