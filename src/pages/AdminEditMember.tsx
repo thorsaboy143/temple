@@ -154,26 +154,26 @@ const AdminEditMember = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center space-x-2 sm:space-x-3">
+    <div className="min-h-screen bg-background">
+      <header className="glass border-b border-border/50 sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4 flex items-center space-x-3">
           <Button onClick={() => navigate("/admin")} variant="ghost" size="icon">
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-            <Church className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+          <div className="w-11 h-11 bg-primary rounded-2xl flex items-center justify-center shadow-apple-md">
+            <Church className="w-6 h-6 text-primary-foreground" strokeWidth={1.5} />
           </div>
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-xl font-semibold text-foreground tracking-tight">
             Edit Member Details
           </h1>
         </div>
       </header>
 
-      <main className="container mx-auto px-3 sm:px-4 py-8 max-w-2xl">
-        <Card className="shadow-[var(--shadow-temple)]">
+      <main className="container mx-auto px-6 py-12 max-w-2xl">
+        <Card className="shadow-apple-lg animate-fade-in-up">
           <CardHeader>
-            <CardTitle>Member Information</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-2xl">Member Information</CardTitle>
+            <CardDescription className="text-base">
               Member ID: {formData.member_id || "Not assigned yet"}
             </CardDescription>
           </CardHeader>
@@ -258,16 +258,19 @@ const AdminEditMember = () => {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+                  size="lg"
+                  className="flex-1 h-12 shadow-apple-md"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? "Saving..." : "Save Changes"}
                 </Button>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
+                  size="lg"
                   onClick={() => navigate("/admin")}
                   disabled={saving}
+                  className="h-12"
                 >
                   Cancel
                 </Button>
