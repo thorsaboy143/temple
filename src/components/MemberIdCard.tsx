@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import { Church } from "lucide-react";
 import { Card } from "@/components/ui/card";
-
 interface MemberIdCardProps {
   memberId: string;
   fullName: string;
@@ -11,14 +10,16 @@ interface MemberIdCardProps {
   approvedDate: string;
   avatarUrl?: string;
 }
-
-const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
-  ({ memberId, fullName, phone, city, state, approvedDate, avatarUrl }, ref) => {
-    return (
-      <Card
-        ref={ref}
-        className="w-full max-w-md mx-auto overflow-hidden bg-primary shadow-apple-xl border-0"
-      >
+const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(({
+  memberId,
+  fullName,
+  phone,
+  city,
+  state,
+  approvedDate,
+  avatarUrl
+}, ref) => {
+  return <Card ref={ref} className="w-full max-w-md mx-auto overflow-hidden bg-primary shadow-apple-xl border-0">
         <div className="relative p-8 pb-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
@@ -36,19 +37,11 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
           {/* Member Photo */}
           <div className="flex justify-center mb-6">
             <div className="w-28 h-28 rounded-3xl border-3 border-white/20 overflow-hidden bg-white/10 backdrop-blur-sm shadow-apple-lg">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt={fullName}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
+              {avatarUrl ? <img src={avatarUrl} alt={fullName} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center">
                   <span className="text-5xl text-white/70 font-semibold">
                     {fullName.charAt(0).toUpperCase()}
                   </span>
-                </div>
-              )}
+                </div>}
             </div>
           </div>
 
@@ -80,9 +73,7 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
                 <p className="text-white font-medium text-sm">{phone}</p>
               </div>
               <div>
-                <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">
-                  Location
-                </p>
+                <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">​Address</p>
                 <p className="text-white font-medium text-sm">
                   {city}, {state}
                 </p>
@@ -95,10 +86,10 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
               </p>
               <p className="text-white font-medium text-sm">
                 {new Date(approvedDate).toLocaleDateString("en-IN", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+              year: "numeric",
+              month: "long",
+              day: "numeric"
+            })}
               </p>
             </div>
           </div>
@@ -110,11 +101,7 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
             </p>
           </div>
         </div>
-      </Card>
-    );
-  }
-);
-
+      </Card>;
+});
 MemberIdCard.displayName = "MemberIdCard";
-
 export default MemberIdCard;
