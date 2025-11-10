@@ -17,25 +17,25 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
     return (
       <Card
         ref={ref}
-        className="w-full max-w-md mx-auto overflow-hidden bg-gradient-to-br from-primary via-secondary to-primary shadow-[var(--shadow-temple)]"
+        className="w-full max-w-md mx-auto overflow-hidden bg-primary shadow-apple-xl border-0"
       >
-        <div className="relative p-6 pb-4">
+        <div className="relative p-8 pb-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <Church className="w-7 h-7 text-white" />
+              <div className="w-12 h-12 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                <Church className="w-6 h-6 text-white" strokeWidth={1.5} />
               </div>
               <div>
-                <h2 className="text-white font-bold text-lg">Temple Member</h2>
-                <p className="text-white/80 text-xs">Official ID Card</p>
+                <h2 className="text-white font-semibold text-lg">Temple Member</h2>
+                <p className="text-white/70 text-xs font-light">Official ID Card</p>
               </div>
             </div>
           </div>
 
           {/* Member Photo */}
-          <div className="flex justify-center mb-4">
-            <div className="w-32 h-32 rounded-full border-4 border-white/30 overflow-hidden bg-white/10 backdrop-blur-sm">
+          <div className="flex justify-center mb-6">
+            <div className="w-28 h-28 rounded-3xl border-3 border-white/20 overflow-hidden bg-white/10 backdrop-blur-sm shadow-apple-lg">
               {avatarUrl ? (
                 <img
                   src={avatarUrl}
@@ -44,7 +44,7 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-6xl text-white/60 font-bold">
+                  <span className="text-5xl text-white/70 font-semibold">
                     {fullName.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -53,34 +53,34 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
           </div>
 
           {/* Member Info */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 space-y-3">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 space-y-4">
             <div>
-              <p className="text-white/70 text-xs uppercase tracking-wider mb-1">
+              <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">
                 Member ID
               </p>
-              <p className="text-white font-bold text-xl tracking-wide">
+              <p className="text-white font-semibold text-xl tracking-wide">
                 {memberId}
               </p>
             </div>
             
-            <div className="h-px bg-white/20" />
+            <div className="h-px bg-white/15" />
             
             <div>
-              <p className="text-white/70 text-xs uppercase tracking-wider mb-1">
+              <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">
                 Name
               </p>
-              <p className="text-white font-semibold text-lg">{fullName}</p>
+              <p className="text-white font-semibold text-base">{fullName}</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-white/70 text-xs uppercase tracking-wider mb-1">
+                <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">
                   Phone
                 </p>
                 <p className="text-white font-medium text-sm">{phone}</p>
               </div>
               <div>
-                <p className="text-white/70 text-xs uppercase tracking-wider mb-1">
+                <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">
                   Location
                 </p>
                 <p className="text-white font-medium text-sm">
@@ -90,7 +90,7 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
             </div>
             
             <div>
-              <p className="text-white/70 text-xs uppercase tracking-wider mb-1">
+              <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">
                 Member Since
               </p>
               <p className="text-white font-medium text-sm">
@@ -104,8 +104,8 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(
           </div>
 
           {/* Footer */}
-          <div className="mt-4 text-center">
-            <p className="text-white/60 text-xs">
+          <div className="mt-5 text-center">
+            <p className="text-white/50 text-xs font-light">
               This card is valid for temple services and events
             </p>
           </div>

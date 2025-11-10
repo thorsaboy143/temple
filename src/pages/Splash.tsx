@@ -8,36 +8,48 @@ const Splash = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/");
-    }, 3000);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary via-secondary to-primary animate-gradient">
-      <div className="text-center space-y-8 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background overflow-hidden">
+      <div className="text-center space-y-12 px-4 animate-fade-in-up">
+        {/* Apple-style icon with subtle animation */}
         <div className="relative">
-          <div className="w-32 h-32 bg-gradient-to-br from-background to-background/90 rounded-full flex items-center justify-center mx-auto shadow-2xl animate-pulse">
-            <Church className="w-20 h-20 text-primary" />
+          <div className="w-28 h-28 rounded-[2rem] glass-strong flex items-center justify-center mx-auto shadow-apple-xl animate-scale-in">
+            <Church className="w-16 h-16 text-primary" strokeWidth={1.5} />
           </div>
-          <div className="absolute inset-0 w-32 h-32 mx-auto rounded-full bg-background/20 animate-ping" />
         </div>
         
-        <div className="space-y-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-primary-foreground">
+        {/* Minimal typography */}
+        <div className="space-y-3 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <h1 className="text-5xl md:text-6xl font-semibold text-foreground tracking-tight">
             Temple Membership
           </h1>
-          <p className="text-xl md:text-2xl text-primary-foreground/90">
+          <p className="text-lg md:text-xl text-muted-foreground font-light">
             Welcome to Our Sacred Community
           </p>
         </div>
 
-        <div className="flex justify-center space-x-2 mt-8">
-          <div className="w-3 h-3 bg-primary-foreground rounded-full animate-bounce [animation-delay:-0.3s]" />
-          <div className="w-3 h-3 bg-primary-foreground rounded-full animate-bounce [animation-delay:-0.15s]" />
-          <div className="w-3 h-3 bg-primary-foreground rounded-full animate-bounce" />
+        {/* Minimal loading indicator */}
+        <div className="flex justify-center mt-12 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <div className="h-1 w-16 bg-muted rounded-full overflow-hidden">
+            <div className="h-full bg-primary rounded-full animate-[slide-right_1.5s_ease-in-out_infinite]" style={{
+              animation: 'slide-right 1.5s ease-in-out infinite',
+            }} />
+          </div>
         </div>
       </div>
+      
+      <style>{`
+        @keyframes slide-right {
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }
+      `}</style>
     </div>
   );
 };
