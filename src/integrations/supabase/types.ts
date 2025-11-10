@@ -25,6 +25,7 @@ export type Database = {
           family_members: Json | null
           full_name: string
           id: string
+          member_id: string | null
           phone: string
           pincode: string | null
           state: string | null
@@ -43,6 +44,7 @@ export type Database = {
           family_members?: Json | null
           full_name: string
           id?: string
+          member_id?: string | null
           phone: string
           pincode?: string | null
           state?: string | null
@@ -61,6 +63,7 @@ export type Database = {
           family_members?: Json | null
           full_name?: string
           id?: string
+          member_id?: string | null
           phone?: string
           pincode?: string | null
           state?: string | null
@@ -124,6 +127,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_member_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

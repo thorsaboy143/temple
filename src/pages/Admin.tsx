@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Check, Church, X, LogOut, Filter, FileText, Search } from "lucide-react";
+import { ArrowLeft, Check, Church, X, LogOut, Filter, FileText, Search, Edit, CreditCard } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -319,6 +319,28 @@ const Admin = () => {
                             <X className="w-4 h-4 mr-2" />
                             Reject
                           </Button>
+                        </div>
+                      )}
+                      {app.status === "approved" && (
+                        <div className="flex space-x-3 pt-4 border-t">
+                          <Button
+                            onClick={() => navigate(`/admin/edit-member?id=${app.id}`)}
+                            variant="outline"
+                            className="flex-1"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Details
+                          </Button>
+                          {app.member_id && (
+                            <Button
+                              onClick={() => navigate(`/member-card?id=${app.id}`)}
+                              variant="outline"
+                              className="flex-1"
+                            >
+                              <CreditCard className="w-4 h-4 mr-2" />
+                              View Card
+                            </Button>
+                          )}
                         </div>
                       )}
                     </CardContent>

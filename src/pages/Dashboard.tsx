@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Church, FileText, LogOut, Settings, Shield, Heart, Calendar, User } from "lucide-react";
+import { Church, FileText, LogOut, Settings, Shield, Heart, Calendar, User, CreditCard } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import MobileNav from "@/components/MobileNav";
 
@@ -18,6 +18,7 @@ interface MembershipApplication {
   status: string;
   created_at: string;
   donation_amount: number;
+  member_id: string | null;
 }
 
 const Dashboard = () => {
@@ -185,20 +186,38 @@ const Dashboard = () => {
                 {applications.map((app) => (
                   <div
                     key={app.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                    className="p-4 border rounded-lg hover:bg-muted/50 transition-colors space-y-3"
                   >
-                    <div className="space-y-1">
-                      <p className="font-medium">{app.full_name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Submitted: {new Date(app.created_at).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Donation: ₹{app.donation_amount}
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <p className="font-medium">{app.full_name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Submitted: {new Date(app.created_at).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Donation: ₹{app.donation_amount}
+                        </p>
+                        {app.member_id && (
+                          <p className="text-sm font-semibold text-primary">
+                            Member ID: {app.member_id}
+                          </p>
+                        )}
+                      </div>
+                      <Badge className={getStatusColor(app.status)}>
+                        {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                      </Badge>
                     </div>
-                    <Badge className={getStatusColor(app.status)}>
-                      {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                    </Badge>
+                    {app.status === "approved" && app.member_id && (
+                      <Button
+                        onClick={() => navigate(`/member-card?id=${app.id}`)}
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                      >
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        View Member Card
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
