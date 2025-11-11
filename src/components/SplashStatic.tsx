@@ -1,20 +1,9 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import { Church } from "lucide-react";
 
-const Splash = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate("/");
-    }, 2500);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
-
+const SplashStatic: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary-glow/5 via-background to-accent/5 overflow-hidden relative">
+  <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary-glow/5 via-background to-accent/5 overflow-hidden relative">
       {/* Animated glow orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px] animate-float" />
@@ -62,4 +51,4 @@ const Splash = () => {
   );
 };
 
-export default Splash;
+export default SplashStatic;
