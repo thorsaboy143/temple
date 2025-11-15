@@ -36,6 +36,22 @@ const Auth = () => {
     const mode = urlParams.get('mode');
     const type = urlParams.get('type');
     const isPasswordRecovery = type === 'recovery';
+
+    // Hash-based detection for Supabase email links when path defaults to site root
+    // Supabase includes fragments like #access_token=...&type=signup or #type=recovery
+    if (!type && window.location.hash) {
+      const hash = window.location.hash;
+      const hashParams = new URLSearchParams(hash.replace('#', ''));
+      const hashType = hashParams.get('type');
+      if (hashType === 'signup') {
+        // Redirect user to verification instructions page if they landed on root
+        navigate('/verify-email');
+        return; // skip rest, page will show verify message
+      } else if (hashType === 'recovery') {
+        // Force recovery flow
+        navigate('/auth?type=recovery');
+      }
+    }
     
     if (isPasswordRecovery) {
       setIsRecovery(true);
