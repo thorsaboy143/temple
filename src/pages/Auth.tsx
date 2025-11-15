@@ -35,8 +35,9 @@ const Auth = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const type = urlParams.get('type');
+    const isPasswordRecovery = type === 'recovery';
     
-    if (type === 'recovery') {
+    if (isPasswordRecovery) {
       setIsRecovery(true);
       setIsLogin(false);
       setIsForgotPassword(false);
@@ -47,7 +48,8 @@ const Auth = () => {
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session && !isRecovery) {
+      // Don't redirect if this is a password recovery flow
+      if (session && !isPasswordRecovery) {
         navigate("/dashboard");
       }
     });
@@ -55,13 +57,15 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
         setIsRecovery(true);
-      } else if (session && !isRecovery) {
+        setIsLogin(false);
+        setIsForgotPassword(false);
+      } else if (session && !isPasswordRecovery && event !== 'PASSWORD_RECOVERY') {
         navigate("/dashboard");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, isRecovery]);
+  }, [navigate]);
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
