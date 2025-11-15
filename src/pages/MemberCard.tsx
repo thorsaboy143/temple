@@ -13,10 +13,13 @@ interface MemberData {
   member_id: string;
   full_name: string;
   phone: string;
+  aadhar_number: string;
+  address: string;
   city: string;
   state: string;
   created_at: string;
   avatar_url?: string;
+  passport_photo_url?: string | null;
 }
 
 const MemberCard = () => {
@@ -62,7 +65,7 @@ const MemberCard = () => {
 
       const { data, error } = await supabase
         .from("membership_applications")
-        .select("id, member_id, full_name, phone, city, state, created_at, user_id")
+        .select("id, member_id, full_name, phone, aadhar_number, address, city, state, created_at, user_id, passport_photo_url")
         .eq("id", applicationId)
         .eq("status", "approved")
         .single();
@@ -88,16 +91,51 @@ const MemberCard = () => {
         return;
       }
 
-      // Fetch avatar from profiles (use the member's user_id, not the current user)
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("avatar_url")
-        .eq("id", data.user_id)
-        .single();
+      // Prefer passport photo attached to the application; fallback to profile avatar
+      let displayUrl: string | undefined = undefined;
+
+      if (data.passport_photo_url) {
+        // passport_photo_url stores the storage path (e.g., userId/filename.ext)
+        // Generate a short-lived signed URL for display
+        try {
+          const { data: signed, error: signedError } = await supabase.storage
+            .from("passport-photos")
+            .createSignedUrl(data.passport_photo_url, 60 * 10); // 10 minutes
+          
+          if (signedError) {
+            console.error('Error generating signed URL for passport photo:', signedError);
+          }
+          
+          if (signed?.signedUrl) {
+            displayUrl = signed.signedUrl;
+          } else {
+            // Fallback: try public URL
+            const { data: publicData } = supabase.storage
+              .from("passport-photos")
+              .getPublicUrl(data.passport_photo_url);
+            
+            if (publicData?.publicUrl) {
+              displayUrl = publicData.publicUrl;
+            }
+          }
+        } catch (err) {
+          console.error('Exception loading passport photo:', err);
+          displayUrl = undefined;
+        }
+      }
+
+      if (!displayUrl) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", data.user_id)
+          .single();
+        displayUrl = profile?.avatar_url || undefined;
+      }
 
       setMemberData({
         ...data,
-        avatar_url: profile?.avatar_url,
+        avatar_url: displayUrl,
       });
       setLoading(false);
     };
@@ -225,6 +263,8 @@ const MemberCard = () => {
               memberId={memberData.member_id}
               fullName={memberData.full_name}
               phone={memberData.phone}
+              aadharNumber={memberData.aadhar_number}
+              address={memberData.address}
               city={memberData.city}
               state={memberData.state}
               approvedDate={memberData.created_at}
@@ -237,6 +277,8 @@ const MemberCard = () => {
               memberId={memberData.member_id}
               fullName={memberData.full_name}
               phone={memberData.phone}
+              aadharNumber={memberData.aadhar_number}
+              address={memberData.address}
               city={memberData.city}
               state={memberData.state}
               approvedDate={memberData.created_at}

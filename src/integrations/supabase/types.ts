@@ -26,6 +26,7 @@ export type Database = {
           full_name: string
           id: string
           member_id: string | null
+          passport_photo_url: string | null
           phone: string
           pincode: string | null
           state: string | null
@@ -45,6 +46,7 @@ export type Database = {
           full_name: string
           id?: string
           member_id?: string | null
+          passport_photo_url?: string | null
           phone: string
           pincode?: string | null
           state?: string | null
@@ -64,6 +66,7 @@ export type Database = {
           full_name?: string
           id?: string
           member_id?: string | null
+          passport_photo_url?: string | null
           phone?: string
           pincode?: string | null
           state?: string | null

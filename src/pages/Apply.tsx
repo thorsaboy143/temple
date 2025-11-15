@@ -12,6 +12,7 @@ import { ArrowLeft, Church, Plus, Trash2, Upload, X, CheckCircle, XCircle } from
 import { TablesInsert } from "@/integrations/supabase/types";
 import { getUserFriendlyError } from "@/lib/errorHandler";
 import MobileNav from "@/components/MobileNav";
+import { demoApplicationData } from "@/lib/demoData";
 
 const applicationSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -140,6 +141,26 @@ const Apply = () => {
                   }
                 } catch (err) {
                   console.warn("Could not get signed URL for aadhar preview", err);
+                }
+              }
+
+              // Load existing passport photo preview if present
+              const photoPath = typed.passport_photo_url || null;
+              if (photoPath) {
+                setExistingPhotoPath(photoPath);
+                try {
+                  const { data: signedData, error: signedError } = await supabase.storage
+                    .from("passport-photos")
+                    .createSignedUrl(photoPath, 60);
+                  if (!signedError && signedData?.signedUrl) {
+                    setPassportPhotoPreview(signedData.signedUrl as string);
+                  } else {
+                    // fallback to public URL if bucket is public
+                    const { data: publicData } = supabase.storage.from("passport-photos").getPublicUrl(photoPath);
+                    if (publicData?.publicUrl) setPassportPhotoPreview(publicData.publicUrl);
+                  }
+                } catch (err) {
+                  console.warn("Could not get signed URL for passport photo preview", err);
                 }
               }
             }
@@ -479,7 +500,7 @@ const Apply = () => {
       }
 
       // Upload passport photo if the user selected a new one
-      let passportPhotoUrl = existingPhotoPath || "";
+      let passportPhotoUrl: string | null = existingPhotoPath;
       if (passportPhoto) {
         try {
           // Simple filename generation
@@ -546,7 +567,7 @@ const Apply = () => {
         state,
   // upi_id removed
         aadhar_card_url: aadharCardUrl,
-        passport_photo_url: passportPhotoUrl,
+        passport_photo_url: passportPhotoUrl ?? undefined,
         family_members: familyMembers,
         donation_amount: 1000,
         status: existingApplicationId ? undefined : "pending",
@@ -554,9 +575,18 @@ const Apply = () => {
 
       if (existingApplicationId) {
         // Update existing application
+        // Omit undefined fields to avoid overwriting existing values unintentionally
+        const updatePayload = { ...applicationData } as Record<string, unknown>;
+        if (updatePayload.passport_photo_url === undefined) {
+          delete updatePayload.passport_photo_url;
+        }
+        if (updatePayload.aadhar_card_url === undefined) {
+          delete updatePayload.aadhar_card_url;
+        }
+
         const { error: updateError } = await supabase
           .from("membership_applications")
-          .update(applicationData)
+          .update(updatePayload)
           .eq("id", existingApplicationId);
 
         if (updateError) throw updateError;
@@ -631,10 +661,38 @@ const Apply = () => {
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-2xl relative z-10">
         <Card className="shadow-[var(--shadow-temple)] border-primary/10 rounded-3xl">
           <CardHeader>
-            <CardTitle className="text-3xl tracking-tight">Temple Membership Form</CardTitle>
-            <CardDescription className="text-base">
-              Fill in your details to become a temple member. Membership fee: ₹1,000
-            </CardDescription>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle className="text-3xl tracking-tight">Temple Membership Form</CardTitle>
+                <CardDescription className="text-base">
+                  Fill in your details to become a temple member. Membership fee: ₹1,000
+                </CardDescription>
+              </div>
+              {!existingApplicationId && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setFullName(demoApplicationData.fullName);
+                    setAddress(demoApplicationData.address);
+                    setPhone(demoApplicationData.phone);
+                    setAadharNumber(demoApplicationData.aadharNumber);
+                    setPincode(demoApplicationData.pincode);
+                    setCity(demoApplicationData.city);
+                    setState(demoApplicationData.state);
+                    setFamilyMembers(demoApplicationData.familyMembers);
+                    toast({
+                      title: "Demo Data Filled",
+                      description: "Form filled with sample data. Don't forget to upload documents!",
+                    });
+                  }}
+                  className="shrink-0"
+                >
+                  Fill Demo
+                </Button>
+              )}
+            </div>
           </CardHeader>
           {existingApplicationId && (
             <div className="px-6">

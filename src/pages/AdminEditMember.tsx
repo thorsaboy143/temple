@@ -251,6 +251,7 @@ const AdminEditMember = () => {
                   onChange={(e) => setFormData({ ...formData, aadhar_number: e.target.value })}
                   maxLength={12}
                   required
+                  disabled
                 />
               </div>
 

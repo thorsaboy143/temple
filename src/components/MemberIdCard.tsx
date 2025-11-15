@@ -5,6 +5,8 @@ interface MemberIdCardProps {
   memberId: string;
   fullName: string;
   phone: string;
+  aadharNumber: string;
+  address: string;
   city: string;
   state: string;
   approvedDate: string;
@@ -14,6 +16,8 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(({
   memberId,
   fullName,
   phone,
+  aadharNumber,
+  address,
   city,
   state,
   approvedDate,
@@ -73,11 +77,25 @@ const MemberIdCard = forwardRef<HTMLDivElement, MemberIdCardProps>(({
                 <p className="text-white font-medium text-sm">{phone}</p>
               </div>
               <div>
-                <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">​Address</p>
-                <p className="text-white font-medium text-sm">
-                  {city}, {state}
+                <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">
+                  Aadhar
+                </p>
+                <p className="text-white font-medium text-sm tracking-wider">
+                  {aadharNumber.replace(/(\d{4})(\d{4})(\d{4})/, '$1 $2 $3')}
                 </p>
               </div>
+            </div>
+            
+            <div>
+              <p className="text-white/60 text-[10px] uppercase tracking-widest mb-1.5 font-medium">
+                Address
+              </p>
+              <p className="text-white font-medium text-sm leading-relaxed">
+                {address}
+              </p>
+              <p className="text-white/80 font-medium text-xs mt-1">
+                {city}, {state}
+              </p>
             </div>
             
             <div>

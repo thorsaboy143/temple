@@ -22,6 +22,18 @@ using (
     auth.uid()::text = (storage.foldername(name))[1]
 );
 
+drop policy if exists "Admins can view all passport photos" on storage.objects;
+create policy "Admins can view all passport photos"
+on storage.objects for select
+to authenticated
+using (
+    bucket_id = 'passport-photos' AND
+    EXISTS (
+        SELECT 1 FROM public.user_roles
+        WHERE user_id = auth.uid() AND role = 'admin'
+    )
+);
+
 drop policy if exists "Users can update their own passport photos" on storage.objects;
 create policy "Users can update their own passport photos"
 on storage.objects for update
