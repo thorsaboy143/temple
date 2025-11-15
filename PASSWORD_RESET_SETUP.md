@@ -25,17 +25,19 @@ For production, you'll need to update this to your actual domain.
 
 1. Go to: https://supabase.com/dashboard/project/dkdzjjftxwoipvzfnkjp/auth/url-configuration
 
-2. Set the **Site URL** to your production domain (e.g., `https://your-temple-site.netlify.app`)
+2. Set the **Site URL** to your production domain (e.g., `https://your-temple-site.vercel.app`)
 
 3. Add **Redirect URLs** (one per line):
    ```
    http://localhost:8080/auth*
-   https://your-temple-site.netlify.app/auth*
+   https://your-temple-site.vercel.app/auth*
    ```
 
-4. **For Netlify deployment**, add this to Netlify Environment Variables:
-   - Go to: Site settings → Environment variables
-   - Add: `VITE_SITE_URL` = `https://your-temple-site.netlify.app`
+4. **For Vercel deployment**, add this to Vercel Environment Variables:
+   - Go to: Your Project → Settings → Environment Variables
+   - Add: `VITE_SITE_URL` = `https://your-temple-site.vercel.app`
+   - **Important**: Select all three environments (Production, Preview, Development)
+   - Click "Save"
 
 ### 4. How It Works Now
 
@@ -64,8 +66,8 @@ npm run dev
 ```
 
 **Production Testing:**
-1. Deploy to Netlify
-2. Update `VITE_SITE_URL` in Netlify environment variables
+1. Deploy to Vercel
+2. Update `VITE_SITE_URL` in Vercel environment variables
 3. Configure Supabase Site URL and Redirect URLs
 4. Test the forgot password flow
 
@@ -97,3 +99,56 @@ npm run dev
 - Ensure redirect URL is whitelisted in Supabase dashboard
 - Check Site URL matches your deployment URL exactly
 - Include trailing wildcard: `/auth*`
+
+## Vercel Deployment Steps
+
+### 1. Deploy to Vercel
+```bash
+# If not already installed
+npm i -g vercel
+
+# Deploy from your project directory
+vercel
+
+# Follow the prompts:
+# - Link to existing project or create new
+# - Set up project (use defaults for Vite)
+# - Deploy
+```
+
+### 2. Configure Environment Variables
+1. Go to your Vercel Dashboard: https://vercel.com/dashboard
+2. Select your temple project
+3. Go to Settings → Environment Variables
+4. Add the following variables:
+   - `VITE_SUPABASE_URL` = `https://dkdzjjftxwoipvzfnkjp.supabase.co`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY` = (copy from your .env file)
+   - `VITE_SITE_URL` = `https://your-project.vercel.app` (use your actual Vercel URL)
+5. Select all environments (Production, Preview, Development)
+6. Click "Save"
+
+### 3. Configure Supabase
+1. Copy your Vercel deployment URL (e.g., `https://temple-xyz.vercel.app`)
+2. Go to Supabase Dashboard → Authentication → URL Configuration
+3. Set **Site URL** to your Vercel URL
+4. Add to **Redirect URLs**:
+   ```
+   https://your-project.vercel.app/auth*
+   http://localhost:8080/auth*
+   ```
+
+### 4. Redeploy
+After adding environment variables, trigger a new deployment:
+```bash
+vercel --prod
+```
+
+Or push to your GitHub repository if you've connected it to Vercel (auto-deploys).
+
+### 5. Test
+1. Visit your Vercel URL
+2. Go to `/auth`
+3. Click "Forgot Password?"
+4. Enter your email
+5. Check email and click reset link
+6. Should open your Vercel site with password reset form
