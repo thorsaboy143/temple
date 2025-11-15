@@ -181,7 +181,8 @@ const Auth = () => {
         }
 
         const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
-        const redirectUrl = `${siteUrl}/dashboard`;
+        // After email confirmation we will send user back to auth login mode so they can sign in
+        const redirectUrl = `${siteUrl}/auth?mode=login`;
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -195,8 +196,8 @@ const Auth = () => {
         });
         if (error) throw error;
         
-        // Redirect to thank you page instead of showing toast
-        navigate("/thank-you");
+        // Redirect to verify email instructions page
+        navigate("/verify-email");
       }
     } catch (error: unknown) {
       console.error('Auth error:', error);
