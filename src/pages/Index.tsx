@@ -48,7 +48,7 @@ const Index = () => {
           {/* Headline */}
           <div className="space-y-4">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground">
-              Temple Membership
+              Temple Membership (Updated Test)
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground font-light max-w-xl mx-auto">
               Join our community for exclusive access to events, ceremonies, and spiritual resources
