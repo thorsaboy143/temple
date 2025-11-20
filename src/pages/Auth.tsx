@@ -21,10 +21,8 @@ const authSchema = z.object({
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
-  const [isRecovery, setIsRecovery] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,48 +32,20 @@ const Auth = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
-    const type = urlParams.get('type');
-    const isPasswordRecovery = type === 'recovery';
-
-    // Hash-based detection for Supabase email links when path defaults to site root
-    // Supabase includes fragments like #access_token=...&type=signup or #type=recovery
-    if (!type && window.location.hash) {
-      const hash = window.location.hash;
-      const hashParams = new URLSearchParams(hash.replace('#', ''));
-      const hashType = hashParams.get('type');
-      if (hashType === 'signup') {
-        // Redirect user to verification instructions page if they landed on root
-        navigate('/verify-email');
-        return; // skip rest, page will show verify message
-      } else if (hashType === 'recovery') {
-        // Force recovery flow
-        navigate('/auth?type=recovery');
-      }
-    }
-    
-    if (isPasswordRecovery) {
-      setIsRecovery(true);
-      setIsLogin(false);
-      setIsForgotPassword(false);
-    } else if (mode === 'signup') {
+    if (mode === 'signup') {
       setIsLogin(false);
     } else if (mode === 'login') {
       setIsLogin(true);
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      // Don't redirect if this is a password recovery flow
-      if (session && !isPasswordRecovery) {
+      if (session) {
         navigate("/dashboard");
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setIsRecovery(true);
-        setIsLogin(false);
-        setIsForgotPassword(false);
-      } else if (session && !isPasswordRecovery && event !== 'PASSWORD_RECOVERY') {
+      if (session) {
         navigate("/dashboard");
       }
     });
@@ -88,9 +58,8 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/auth?type=recovery`,
+        redirectTo: `${window.location.origin}/auth`,
       });
       
       if (error) throw error;
@@ -102,54 +71,6 @@ const Auth = () => {
       setIsForgotPassword(false);
     } catch (error: unknown) {
       console.error('Password reset error:', error);
-      toast({
-        title: "Error",
-        description: getUserFriendlyError(error),
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdatePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      if (password !== confirmPassword) {
-        toast({
-          title: "Error",
-          description: "Passwords do not match",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
-
-      if (password.length < 6) {
-        toast({
-          title: "Error",
-          description: "Password must be at least 6 characters",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
-
-      const { error } = await supabase.auth.updateUser({ password });
-      
-      if (error) throw error;
-
-      toast({
-        title: "Password Updated",
-        description: "Your password has been successfully updated.",
-      });
-      
-      setIsRecovery(false);
-      navigate("/auth");
-    } catch (error: unknown) {
-      console.error('Password update error:', error);
       toast({
         title: "Error",
         description: getUserFriendlyError(error),
@@ -196,9 +117,7 @@ const Auth = () => {
           return;
         }
 
-        const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
-        // After email confirmation we will send user back to auth login mode so they can sign in
-        const redirectUrl = `${siteUrl}/auth?mode=login`;
+        const redirectUrl = `${window.location.origin}/dashboard`;
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -212,8 +131,8 @@ const Auth = () => {
         });
         if (error) throw error;
         
-        // Redirect to verify email instructions page
-        navigate("/verify-email");
+        // Redirect to thank you page instead of showing toast
+        navigate("/thank-you");
       }
     } catch (error: unknown) {
       console.error('Auth error:', error);
@@ -256,27 +175,23 @@ const Auth = () => {
               <Church className="w-10 h-10 text-primary-foreground" />
             </div>
             <CardTitle className="text-3xl font-bold tracking-tight">
-              {isRecovery
-                ? "Set New Password"
-                : isForgotPassword 
-                  ? "Reset Password"
-                  : isLogin 
-                    ? "Welcome Back" 
-                    : "Create Account"}
+              {isForgotPassword 
+                ? "Reset Password"
+                : isLogin 
+                  ? "Welcome Back" 
+                  : "Create Account"}
             </CardTitle>
             <CardDescription className="text-base">
-              {isRecovery
-                ? "Enter your new password"
-                : isForgotPassword 
-                  ? "Enter your email to reset your password"
-                  : isLogin 
-                    ? "Sign in to access your temple membership" 
-                    : "Begin your spiritual journey with us"}
+              {isForgotPassword 
+                ? "Enter your email to reset your password"
+                : isLogin 
+                  ? "Sign in to access your temple membership" 
+                  : "Begin your spiritual journey with us"}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={isRecovery ? handleUpdatePassword : isForgotPassword ? handleForgotPassword : handleAuth} className="space-y-6">
-              {!isLogin && !isForgotPassword && !isRecovery && (
+            <form onSubmit={isForgotPassword ? handleForgotPassword : handleAuth} className="space-y-6">
+              {!isLogin && !isForgotPassword && (
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name</Label>
@@ -302,41 +217,26 @@ const Auth = () => {
                   </div>
                 </>
               )}
-              {!isRecovery && (
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <AnimatedInput
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <AnimatedInput
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
               {!isForgotPassword && (
                 <div className="space-y-2">
-                  <Label htmlFor="password">{isRecovery ? "New Password" : "Password"}</Label>
+                  <Label htmlFor="password">Password</Label>
                   <AnimatedInput
                     id="password"
                     type="password"
-                    placeholder={isRecovery ? "Enter your new password" : "Enter your password"}
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              )}
-              {isRecovery && (
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <AnimatedInput
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your new password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
                 </div>
@@ -347,44 +247,34 @@ const Auth = () => {
                 disabled={loading}
                 isLoading={loading}
               >
-                {loading 
-                  ? "Processing..." 
-                  : isRecovery 
-                    ? "Update Password"
-                    : isForgotPassword 
-                      ? "Send Reset Link" 
-                      : isLogin 
-                        ? "Sign In" 
-                        : "Sign Up"}
+                {loading ? "Processing..." : isForgotPassword ? "Send Reset Link" : isLogin ? "Sign In" : "Sign Up"}
               </AnimatedButton>
             </form>
-            {!isRecovery && (
-              <div className="mt-6 text-center space-y-2">
-                {!isForgotPassword && isLogin && (
-                  <AnimatedButton
-                    variant="link"
-                    onClick={() => setIsForgotPassword(true)}
-                    className="text-muted-foreground text-sm"
-                  >
-                    Forgot Password?
-                  </AnimatedButton>
-                )}
+            <div className="mt-6 text-center space-y-2">
+              {!isForgotPassword && isLogin && (
                 <AnimatedButton
                   variant="link"
-                  onClick={() => {
-                    setIsForgotPassword(false);
-                    setIsLogin(!isLogin);
-                  }}
-                  className="text-muted-foreground block w-full"
+                  onClick={() => setIsForgotPassword(true)}
+                  className="text-muted-foreground text-sm"
                 >
-                  {isForgotPassword 
-                    ? "Back to Sign In" 
-                    : isLogin 
-                      ? "Don't have an account? Sign up" 
-                      : "Already have an account? Sign in"}
+                  Forgot Password?
                 </AnimatedButton>
-              </div>
-            )}
+              )}
+              <AnimatedButton
+                variant="link"
+                onClick={() => {
+                  setIsForgotPassword(false);
+                  setIsLogin(!isLogin);
+                }}
+                className="text-muted-foreground block w-full"
+              >
+                {isForgotPassword 
+                  ? "Back to Sign In" 
+                  : isLogin 
+                    ? "Don't have an account? Sign up" 
+                    : "Already have an account? Sign in"}
+              </AnimatedButton>
+            </div>
           </CardContent>
         </Card>
         <DecorativeBackground className="lg:hidden" />

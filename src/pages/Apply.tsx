@@ -12,7 +12,6 @@ import { ArrowLeft, Church, Plus, Trash2, Upload, X, CheckCircle, XCircle } from
 import { TablesInsert } from "@/integrations/supabase/types";
 import { getUserFriendlyError } from "@/lib/errorHandler";
 import MobileNav from "@/components/MobileNav";
-import { demoApplicationData } from "@/lib/demoData";
 
 const applicationSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -661,38 +660,10 @@ const Apply = () => {
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-2xl relative z-10">
         <Card className="shadow-[var(--shadow-temple)] border-primary/10 rounded-3xl">
           <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="text-3xl tracking-tight">Temple Membership Form</CardTitle>
-                <CardDescription className="text-base">
-                  Fill in your details to become a temple member. Membership fee: ₹1,000
-                </CardDescription>
-              </div>
-              {!existingApplicationId && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setFullName(demoApplicationData.fullName);
-                    setAddress(demoApplicationData.address);
-                    setPhone(demoApplicationData.phone);
-                    setAadharNumber(demoApplicationData.aadharNumber);
-                    setPincode(demoApplicationData.pincode);
-                    setCity(demoApplicationData.city);
-                    setState(demoApplicationData.state);
-                    setFamilyMembers(demoApplicationData.familyMembers);
-                    toast({
-                      title: "Demo Data Filled",
-                      description: "Form filled with sample data. Don't forget to upload documents!",
-                    });
-                  }}
-                  className="shrink-0"
-                >
-                  Fill Demo
-                </Button>
-              )}
-            </div>
+            <CardTitle className="text-3xl tracking-tight">Temple Membership Form</CardTitle>
+            <CardDescription className="text-base">
+              Fill in your details to become a temple member. Membership fee: ₹1,000
+            </CardDescription>
           </CardHeader>
           {existingApplicationId && (
             <div className="px-6">

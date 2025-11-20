@@ -19,7 +19,6 @@ import MemberCard from "./pages/MemberCard";
 import AdminEditMember from "./pages/AdminEditMember";
 import NotFound from "./pages/NotFound";
 import ThankYou from "./pages/ThankYou";
-import VerifyEmail from "./pages/VerifyEmail";
 
 const queryClient = new QueryClient();
 
@@ -90,11 +89,6 @@ const App = () => (
           <Route path="/thank-you" element={
             <AnimatedLayout>
               <ThankYou />
-            </AnimatedLayout>
-          } />
-          <Route path="/verify-email" element={
-            <AnimatedLayout>
-              <VerifyEmail />
             </AnimatedLayout>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

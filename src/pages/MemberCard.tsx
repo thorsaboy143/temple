@@ -13,8 +13,6 @@ interface MemberData {
   member_id: string;
   full_name: string;
   phone: string;
-  aadhar_number: string;
-  address: string;
   city: string;
   state: string;
   created_at: string;
@@ -65,7 +63,7 @@ const MemberCard = () => {
 
       const { data, error } = await supabase
         .from("membership_applications")
-        .select("id, member_id, full_name, phone, aadhar_number, address, city, state, created_at, user_id, passport_photo_url")
+        .select("id, member_id, full_name, phone, city, state, created_at, user_id, passport_photo_url")
         .eq("id", applicationId)
         .eq("status", "approved")
         .single();
@@ -98,28 +96,11 @@ const MemberCard = () => {
         // passport_photo_url stores the storage path (e.g., userId/filename.ext)
         // Generate a short-lived signed URL for display
         try {
-          const { data: signed, error: signedError } = await supabase.storage
+          const { data: signed } = await supabase.storage
             .from("passport-photos")
             .createSignedUrl(data.passport_photo_url, 60 * 10); // 10 minutes
-          
-          if (signedError) {
-            console.error('Error generating signed URL for passport photo:', signedError);
-          }
-          
-          if (signed?.signedUrl) {
-            displayUrl = signed.signedUrl;
-          } else {
-            // Fallback: try public URL
-            const { data: publicData } = supabase.storage
-              .from("passport-photos")
-              .getPublicUrl(data.passport_photo_url);
-            
-            if (publicData?.publicUrl) {
-              displayUrl = publicData.publicUrl;
-            }
-          }
-        } catch (err) {
-          console.error('Exception loading passport photo:', err);
+          displayUrl = signed?.signedUrl;
+        } catch {
           displayUrl = undefined;
         }
       }
@@ -263,8 +244,6 @@ const MemberCard = () => {
               memberId={memberData.member_id}
               fullName={memberData.full_name}
               phone={memberData.phone}
-              aadharNumber={memberData.aadhar_number}
-              address={memberData.address}
               city={memberData.city}
               state={memberData.state}
               approvedDate={memberData.created_at}
@@ -277,8 +256,6 @@ const MemberCard = () => {
               memberId={memberData.member_id}
               fullName={memberData.full_name}
               phone={memberData.phone}
-              aadharNumber={memberData.aadhar_number}
-              address={memberData.address}
               city={memberData.city}
               state={memberData.state}
               approvedDate={memberData.created_at}
