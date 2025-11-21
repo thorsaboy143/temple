@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,11 +62,7 @@ const Events = () => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrencePattern, setRecurrencePattern] = useState("");
 
-  useEffect(() => {
-    fetchEventsAndCheckAdmin();
-  }, []);
-
-  const fetchEventsAndCheckAdmin = async () => {
+  const fetchEventsAndCheckAdmin = useCallback(async () => {
     try {
       // Check if user is admin
       const { data: { session } } = await supabase.auth.getSession();
@@ -99,7 +95,11 @@ const Events = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchEventsAndCheckAdmin();
+  }, [fetchEventsAndCheckAdmin]);
 
   const resetForm = () => {
     setTitle("");
@@ -163,7 +163,7 @@ const Events = () => {
       console.error("Error saving event:", error);
       toast({
         title: "Error",
-        description: "Failed to save event",
+        description: "Failed to load events",
         variant: "destructive",
       });
     }

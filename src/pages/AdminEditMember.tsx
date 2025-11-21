@@ -131,7 +131,7 @@ const AdminEditMember = () => {
       });
 
       navigate("/admin");
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
         description: getUserFriendlyError(error),

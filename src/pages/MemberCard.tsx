@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Download, Printer, Share2, Church } from "lucide-react";
@@ -13,6 +14,8 @@ interface MemberData {
   member_id: string;
   full_name: string;
   phone: string;
+  address: string;
+  aadhar_number: string;
   city: string;
   state: string;
   created_at: string;
@@ -25,7 +28,7 @@ const MemberCard = () => {
   const applicationId = searchParams.get("id");
   const [memberData, setMemberData] = useState<MemberData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -63,18 +66,45 @@ const MemberCard = () => {
 
       const { data, error } = await supabase
         .from("membership_applications")
-        .select("id, member_id, full_name, phone, city, state, created_at, user_id, passport_photo_url")
+        .select("id, member_id, full_name, phone, address, aadhar_number, city, state, created_at, user_id, passport_photo_url")
         .eq("id", applicationId)
         .eq("status", "approved")
         .single();
 
       if (error || !data) {
+        console.error("Member card fetch error:", error);
+        
+        let errorMessage = "Member card not found or not yet approved";
+        
+        if (error?.code === "PGRST116") {
+          errorMessage = "No approved application found with this ID";
+        } else if (error?.message) {
+          errorMessage = error.message.includes("JWT") || error.message.includes("auth") 
+            ? "Authentication error - please log in again"
+            : error.message;
+        } else if (!data) {
+          errorMessage = "Application not found. It may be pending approval.";
+        }
+        
         toast({
-          title: "Error",
-          description: "Member card not found or not yet approved",
+          title: "Cannot View Member Card",
+          description: errorMessage,
           variant: "destructive",
         });
-        navigate("/dashboard");
+        
+        // Don't immediately redirect - give user time to see the error
+        setTimeout(() => navigate("/dashboard"), 3000);
+        return;
+      }
+      
+      // Check if member_id exists
+      if (!data.member_id) {
+        toast({
+          title: "Member ID Not Generated",
+          description: "Your application is approved but the member ID hasn't been generated yet. Please contact an administrator.",
+          variant: "destructive",
+        });
+        setTimeout(() => navigate("/dashboard"), 3000);
         return;
       }
 
@@ -208,9 +238,24 @@ const MemberCard = () => {
   if (!memberData || !memberData.member_id) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <p className="text-muted-foreground">Member card not available</p>
-          <Button onClick={() => navigate("/dashboard")}>Go to Dashboard</Button>
+        <div className="text-center space-y-4 px-6">
+          <Church className="w-16 h-16 text-muted-foreground/50 mx-auto" />
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold">Member Card Not Available</h2>
+            <p className="text-muted-foreground">
+              {!memberData 
+                ? "Unable to load member card data" 
+                : "Member ID has not been generated yet"}
+            </p>
+            {!memberData?.member_id && memberData && (
+              <p className="text-sm text-muted-foreground">
+                Please contact an administrator to generate your member ID.
+              </p>
+            )}
+          </div>
+          <Button onClick={() => navigate("/dashboard")} className="mt-4">
+            Go to Dashboard
+          </Button>
         </div>
       </div>
     );
@@ -244,6 +289,8 @@ const MemberCard = () => {
               memberId={memberData.member_id}
               fullName={memberData.full_name}
               phone={memberData.phone}
+              address={memberData.address}
+              aadharNumber={memberData.aadhar_number}
               city={memberData.city}
               state={memberData.state}
               approvedDate={memberData.created_at}
@@ -256,6 +303,8 @@ const MemberCard = () => {
               memberId={memberData.member_id}
               fullName={memberData.full_name}
               phone={memberData.phone}
+              address={memberData.address}
+              aadharNumber={memberData.aadhar_number}
               city={memberData.city}
               state={memberData.state}
               approvedDate={memberData.created_at}

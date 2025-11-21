@@ -104,15 +104,24 @@ const Admin = () => {
 
       if (error) throw error;
 
+      // Fetch updated application to get the generated member_id
+      const { data: updatedApp } = await supabase
+        .from("membership_applications")
+        .select("*")
+        .eq("id", id)
+        .single();
+
       setApplications(applications.map((app) =>
-        app.id === id ? { ...app, status } : app
+        app.id === id ? (updatedApp || { ...app, status }) : app
       ));
 
       toast({
         title: "Status Updated",
-        description: `Application ${status} successfully.`,
+        description: status === "approved" 
+          ? `Application approved successfully.${updatedApp?.member_id ? ` Member ID: ${updatedApp.member_id}` : ""}`
+          : `Application ${status} successfully.`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating status:', error);
       toast({
         title: "Error",
@@ -298,7 +307,7 @@ const Admin = () => {
                             <div className="pt-2">
                               <strong className="text-sm">Family Members:</strong>
                               <div className="mt-2 space-y-1">
-                                {app.family_members.map((member: any, idx: number) => (
+                                {app.family_members.map((member: { name: string; age: number; relation: string }, idx: number) => (
                                   <p key={idx} className="text-sm text-muted-foreground">
                                     {member.name} ({member.age} yrs, {member.relation})
                                   </p>

@@ -22,7 +22,7 @@ interface MembershipApplication {
 }
 
 const Dashboard = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [applications, setApplications] = useState<MembershipApplication[]>([]);
   const [loading, setLoading] = useState(true);

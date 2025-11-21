@@ -106,7 +106,7 @@ const AdminLogin = () => {
         title: "Welcome Admin!",
         description: "Successfully logged in to admin panel.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Admin login error:', error);
       toast({
         title: "Login Failed",

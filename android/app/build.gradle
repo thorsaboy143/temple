@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.temple.app"
+    namespace "com.temple.app.v2"
     compileSdk rootProject.ext.compileSdkVersion
+    
     defaultConfig {
-        applicationId "com.temple.app"
+        applicationId "com.temple.app.v2"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -16,11 +17,37 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            debuggable true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    
+    buildFeatures {
+        buildConfig true
     }
 }
 
